@@ -1,5 +1,4 @@
-# Welcome to gg3D
-## *3D perspective plots for ggplot2*
+# gg3D ## *3D perspective plots for ggplot2*
 
 To install gg3D, run ```devtools::install_github("AckerDWM/gg3D")```
 
