@@ -1,0 +1,182 @@
+---
+title: "gg3D"
+author: "Daniel W. M. Acker"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{gg3D}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Introduction
+
+This document provides an overview of the gg3D package. gg3D is an extension to ggplot2. gg3D provides 3D perspective projections to ggplot2. ggplot2 is an excellent R package that enables plot construction following a "grammar of graphics". However, prior to this package, ggplot2 plots were limited to 2D projections, with third dimensions typically handled by colors, shapes, or sizes. To make up for this limitation, I developed gg3D to add true 3D perspectives to ggplot2.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(gg3D)
+library(cowplot)
+library(plyr)
+library(dplyr)
+```
+
+
+## Building a 3D ggplot
+
+A gg3D plot will typically start with axes and a perspective. Axes are created with the axes_3D function. This function should usually be accompanied by a theme such as theme_void that removes pre-existing 2D axes.
+
+```{r, fig.height=2, fig.width=3}
+qplot(x=0, y=0, z=0, geom="blank") + 
+  theme_void() +
+  axes_3D()
+```
+
+Axes can be populated with points using the function stat_3D.
+
+```{r, fig.height=2, fig.width=3}
+ggplot(iris, aes(x=Petal.Width, y=Sepal.Width, z=Petal.Length, color=Species)) + 
+  theme_void() +
+  axes_3D() +
+  stat_3D()
+```
+
+In addition to points, other geoms can be plotted in 3D using stat_3D. These include text, line, and path.
+
+```{r, fig.height=2, fig.width=3}
+ggplot(ChickWeight, aes(
+  x=as.numeric(Diet), 
+  y=as.numeric(Time), 
+  z=as.numeric(weight),
+  color=Chick)) +
+  theme_void() +
+  axes_3D(theta=30, phi=20) +
+  stat_3D(theta=30, phi=20, geom="path") +
+  theme(legend.position = "none")
+```
+
+## Rotation
+
+As you may notice from the above plot, 3D projections can be rotated using the theta and phi arguements. theta controls the rotation, and phi controls the tilt of the plot.
+
+```{r, fig.height=2, fig.width=6}
+g_angle1 = ggplot(iris, aes(x=Petal.Width, y=Sepal.Width, z=Petal.Length, color=Species)) +
+  axes_3D(theta=100) +
+  stat_3D(theta=100)
+
+g_angle2 = ggplot(iris, aes(x=Petal.Width, y=Sepal.Width, z=Petal.Length, color=Species)) +
+  axes_3D() +
+  stat_3D()
+
+g_angle3 = ggplot(iris, aes(x=Petal.Width, y=Sepal.Width, z=Petal.Length, color=Species)) +
+  axes_3D(theta=170) +
+  stat_3D(theta=170)
+
+leg = get_legend(g_angle1)
+no_leg=theme(legend.position = "none")
+plot_grid(
+  g_angle1+theme_void()+no_leg, 
+  g_angle2+theme_void()+no_leg, 
+  g_angle3+theme_void()+no_leg, 
+  leg, ncol=4)
+```
+
+## Titles and Labels
+
+Axis titles can be added with labs_3D. You can use hjust, vjust, and angle to achieve nice positioning.
+
+```{r, fig.height=4, fig.width=5}
+ggplot(iris, aes(x=Petal.Width, y=Sepal.Width, z=Petal.Length, color=Species)) +
+  axes_3D() +
+  stat_3D() +
+  labs_3D(
+    labs=c("Petal width", "Sepal width", "Petal length"),
+    hjust=c(0,1,1), vjust=c(1, 1, -0.2), angle=c(0, 0, 90)) +
+  theme_void()
+```
+
+Axis labels can be added with axes_3D. Labels show the minimum and maximum value of each axis. Again, you can use hjust, vjust, and angle to achieve nice positioning.
+
+```{r, fig.height=4, fig.width=5}
+theta=0 
+phi=20
+
+ggplot(iris, aes(x=Petal.Width, y=Sepal.Width, z=Petal.Length, color=Species)) +
+  axes_3D(theta=theta, phi=phi) +
+  stat_3D(theta=theta, phi=phi) +
+  axis_labs_3D(theta=theta, phi=phi, size=3, 
+               hjust=c(1,1,1.2,1.2,1.2,1.2), 
+               vjust=c(-.5,-.5,-.2,-.2,1.2,1.2)) +
+  labs_3D(theta=theta, phi=phi, 
+          hjust=c(1,0,0), vjust=c(1.5,1,-.2),
+          labs=c("Petal width", "Sepal width", "Petal length")) +
+  theme_void()
+```
+
+## Wireframe Plots
+
+Wireframe plots can be created with stat_wireframe. Results will be best if input is in the form of a molten matrix. Of course, wireframes can be grouped and combined with other plot objects.
+
+```{r, fig.height=2, fig.width=6, message=FALSE, warning=FALSE}
+df = volcano %>%
+  reshape2::melt() %>%
+  mutate(col=interaction(Var1>mean(Var1), Var2>mean(Var2)))
+
+g1 = ggplot(df, aes(Var1, Var2, z=value)) +
+  axes_3D() +
+  stat_wireframe(alpha=.5) +
+  theme_void() +
+  theme(legend.position = "none") +
+  labs_3D(hjust=c(0,1,1), vjust=c(1, 1, -0.2), angle=c(0, 0, 90))
+
+g2 = ggplot(df, aes(Var1, Var2, z=value, color=col)) +
+  axes_3D() +
+  stat_wireframe(alpha=.5) +
+  theme_void() +
+  theme(legend.position = "none") +
+  labs_3D(hjust=c(0,1,1), vjust=c(1, 1, -0.2), angle=c(0, 0, 90))
+
+g3 = ggplot(df, aes(Var1, Var2, z=value)) +
+  axes_3D() +
+  stat_wireframe(alpha=.5) +
+  stat_3D(aes(color=value), alpha=.5) +
+  theme_void() +
+  theme(legend.position = "none") +
+  scale_color_gradientn(colors=plot3D::jet2.col()) +
+  labs_3D(hjust=c(0,1,1), vjust=c(1, 1, -0.2), angle=c(0, 0, 90))
+
+plot_grid(g1, g2, g3, ncol=3)
+```
+
+# Planned Additions
+
+## Arbitrary annotations
+
+Currently gg3D maps shrinks all axes into the range (0, 1). This makes plots easy to see when axis scales vary greatly. However, it makes addition of arbitrarily positioned annotations unintuitive. One can still create annotations by being tricky: specifying axis ranges with points that will not be plotted. I plan to add a smoother annotation scheme in the future.
+
+```{r, message=FALSE, warning=FALSE}
+ggplot(ChickWeight, aes(
+  x=as.numeric(Diet), 
+  y=as.numeric(Time), 
+  z=as.numeric(weight),
+  color=Chick)) +
+  theme_void() +
+  axes_3D(theta=30, phi=20) +
+  stat_3D(theta=30, phi=20, geom="path") +
+  theme(legend.position = "none") +
+  stat_3D(theta=30, phi=20,
+          inherit.aes = F,
+          data=data.frame(
+            x=c(
+              1:4,
+              min(as.numeric(ChickWeight$Diet)), 
+              max(as.numeric(ChickWeight$Diet))),
+            y=c(0,0,0,0,min(ChickWeight$Time), max(ChickWeight$Time)),
+            z=c(0,0,0,0,min(ChickWeight$weight), max(ChickWeight$weight)),
+            label=c(paste("Diet", 1:4), NA, NA)),
+          aes(x=x, y=y, z=z, label=label),
+          geom="text", vjust=1.2, hjust=1)
+```
+
+## Summary Stat Integration
+
+The function stat_summary can be useful for showing mean, median, or otherwise transformed values. As gg3D provides only stats, this additional transformation is not supported. In the future, I will implement geoms that can take arbitrary stat functions.
