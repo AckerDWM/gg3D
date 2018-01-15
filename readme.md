@@ -1,9 +1,6 @@
 # gg3D -- *3D perspective plots for ggplot2*
 
-<p style="line-height: 0.0">
-![](https://github.com/AckerDWM/gg3D/blob/master/cover-figure.png)
-![](https://github.com/AckerDWM/gg3D/blob/master/cover-figure-2.png)
-</p>
+![](https://github.com/AckerDWM/gg3D/blob/master/cover-figure.png) ![](https://github.com/AckerDWM/gg3D/blob/master/cover-figure-2.png)
 
 To install the R package gg3D, run ```devtools::install_github("AckerDWM/gg3D")```
 
