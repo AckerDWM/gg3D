@@ -1,4 +1,6 @@
-# gg3D -- *3D perspective plots for ggplot2*
+# [UNMAINTAINED] gg3D -- *3D perspective plots for ggplot2*
+
+*This project is no longer maintained.*
 
 ![](https://github.com/AckerDWM/gg3D/blob/master/cover-figure.png)
 ![](https://github.com/AckerDWM/gg3D/blob/master/cover-figure-2.png)
