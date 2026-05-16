@@ -41,12 +41,22 @@ The generated script follows this format:
 
 | Section | Length | Purpose |
 |---|---|---|
-| Cold Open | ~150 words | Punchy hook — drops you into the drama |
-| Intro | ~120 words | "Welcome to Agent Report..." |
-| Week in Review | ~200 words | Overall vibe of the week |
-| Story Segments | ~350 words each | 5-7 deep dives with humor |
-| Lightning Round | ~150 words | Rapid-fire smaller stories |
-| Outro | ~100 words | Witty sign-off |
+| Cold Open | ~150 words | Punchy hook — names the technology and org immediately |
+| Intro | ~120 words | "Welcome to Agent Report..." — teases stories by name |
+| Week in Review | ~200 words | Overall vibe; names conferences, reports, organizations |
+| Story Segments | ~350 words each | 5-7 deep dives: named institutions, journals, arXiv IDs, humor |
+| Lightning Round | ~150 words | Rapid-fire; each blurb opens with the company/institution name |
+| Week in Summary | ~150 words | Spoken bullet recap — one sentence per story, proper nouns first |
+| Outro | ~100 words | Witty sign-off; names one thing to watch next week |
+
+## Attribution standards
+
+Every story segment names:
+- The institution or company (e.g. "MIT CSAIL", "Anthropic", "Mount Sinai Icahn School of Medicine")
+- The publication venue when academic (Nature Medicine, npj Digital Medicine, Science Robotics, NeurIPS, etc.)
+- The arXiv ID for preprints (arXiv:YYMM.NNNNN)
+- The specific product, system, or protocol name (MDASH, A2A, MCP, dreaming)
+- Respected technical blogs when drawn on (Simon Willison's weblog, The Batch from DeepLearning.AI, Towards Data Science, Import AI by Jack Clark)
 
 ## Instructions for Claude
 

@@ -16,13 +16,26 @@ Prioritise stories that are:
 3. A mix of research breakthroughs, industry moves, and community drama
 4. Interesting to non-experts — accessible, with real-world stakes
 
-Return ONLY valid JSON — an array of objects with keys:
-  "rank" (1 = most important),
+For each selected story, extract ALL named entities you can identify:
+- The exact institution(s), university, company, or lab that did the work
+- Named researchers or authors if visible
+- The specific technology, system, protocol, or product name
+- The journal, conference, or venue (Nature, Science, Cell, npj, NeurIPS, ICML, etc.)
+- arXiv ID if it is a preprint (format: arXiv:YYMM.NNNNN)
+- Named benchmark or dataset if relevant
+
+Return ONLY valid JSON — an array of objects with these keys:
+  "rank"            (1 = most important),
   "title",
   "url",
-  "source",
-  "why_interesting" (2-3 sentences, plain English),
-  "funny_angle" (a humorous observation or analogy, 1-2 sentences)
+  "source"          (the feed/site name),
+  "institution"     (named org(s) behind the work, e.g. "MIT CSAIL", "Anthropic", "Mount Sinai Icahn School of Medicine"),
+  "authors"         (named researchers if known, else ""),
+  "journal"         (publication venue if academic, else ""),
+  "arxiv_id"        (e.g. "2603.07670", else ""),
+  "tech_names"      (comma-separated specific product/system/protocol names),
+  "why_interesting" (2-3 sentences, plain English, using proper nouns throughout),
+  "funny_angle"     (a humorous observation or analogy, 1-2 sentences)
 
 No markdown fences, no extra keys, no commentary outside the JSON.\
 """
@@ -36,6 +49,7 @@ def _stories_to_prompt(stories: list[Story]) -> str:
             f"{i}. [{s.source}] {s.title}\n"
             f"   URL: {s.url}\n"
             f"   Date: {pub}\n"
+            f"   Tags: {', '.join(s.tags) if s.tags else 'none'}\n"
             f"   Summary: {s.summary}\n"
         )
     return "\n".join(lines)
